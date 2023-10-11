@@ -14,7 +14,7 @@ VALUES ("Sales Lead", 100000),
     ("Legal Team Lead", 250000),
     ("Lawyer", 190000);
 
-INSERT INTO employee (first_name, last_name, )
+INSERT INTO employee (first_name, last_name)
 VALUES ("John", "Doe"),
     ("Mike", "Chan"),
     ("Ashley", "Rodriguez"),
