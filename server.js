@@ -66,7 +66,7 @@ function startPrompts() {
         case "Exit":
           db.end((err) => {
             if (err) {
-              console.error("Error while closing the database connection: " + err);
+              console.error("Error while closing the database db: " + err);
             }
             console.log("Exiting the application.");
           });
@@ -103,37 +103,32 @@ function addEmployee() {
       },
       {
         type: "input",
-        name: "role_id",
-        message: "What is the role ID of the new employee?",
-      },
-      {
-        type: "input",
         name: "manager_id",
         message: "What is the manager ID of the new employee?",
       },
     ])
     .then((answer) => {
-      const query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
-      connection.query(query, [answer.first_name, answer.last_name, answer.role_id, answer.manager_id], (err) => {
+      const query = "INSERT INTO employee (first_name, last_name, manager_id) VALUES (?, ?, ?)";
+      db.query(query, [answer.first_name, answer.last_name, answer.manager_id], (err) => {
         if (err) {
           console.error("Unable to add a newemployee: " + err);
         } else {
           console.log("A new employee has been added successfully.");
         }
-        startApp();
+        startPrompts();
       });
     });
 }
 
 function updateEmployee() {
   const employeeQuery = "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name FROM employee";
-  const roleQuery = "SELECT id, title FROM role";
-  connection.query(employeeQuery, (err, employeeResults) => {
+  const roleQuery = "SELECT id, title FROM roles";
+  db.query(employeeQuery, (err, employeeResults) => {
     if (err) {
       console.error("Issue selecting employee: " + err);
       return;
     }
-    connection.query(roleQuery, (err, roleResults) => {
+    db.query(roleQuery, (err, roleResults) => {
       if (err) {
         console.error("Issue selecting role: " + err);
         return;
@@ -163,13 +158,13 @@ function updateEmployee() {
         ])
         .then((answers) => {
           const updateQuery = "UPDATE employee SET role_id = ? WHERE id = ?";
-          connection.query(updateQuery, [answers.roleId, answers.employeeId], (err) => {
+          db.query(updateQuery, [answers.roleId, answers.employeeId], (err) => {
             if (err) {
               console.error("Error updating employee role: " + err);
             } else {
               console.log("Employee role updated successfully.");
             }
-            startApp();
+            startPrompts();
           });
         });
     });
@@ -202,15 +197,10 @@ function addRole() {
         name: "wages",
         message: "How much will the new role make?"
       },
-      {
-        type: "input",
-        name: "d_id",
-        message: "What is the department ID that will be associated to this role?"
-      }
     ])
     .then((answer) => {
-      const sql = "INSERT INTO role (name, wages, d_id) VALUES (?, ?, ?)";
-      db.query(sql, [answer.name, answer.wages, answer.d_id], (err) => {
+      const sql = "INSERT INTO roles (title, salary) VALUES (?, ?)";
+      db.query(sql, [answer.name, answer.wages], (err) => {
         if (err) {
           console.error("Unable to add a new role: " + err);
         } else {
