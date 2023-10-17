@@ -355,56 +355,6 @@ function updateEmployee() {
   });
 }
 
-function updateEmployee() {
-  const employeeQuery = "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name FROM employee";
-  const roleQuery = "SELECT id, title FROM roles";
-  db.query(employeeQuery, (err, employeeResults) => {
-    if (err) {
-      console.error("Issue selecting employee: " + err);
-      return;
-    }
-    db.query(roleQuery, (err, roleResults) => {
-      if (err) {
-        console.error("Issue selecting role: " + err);
-        return;
-      }
-      const employeeChoices = employeeResults.map((employee) => ({
-        name: employee.full_name,
-        value: employee.id,
-      }));
-      const roleChoices = roleResults.map((role) => ({
-        name: role.title,
-        value: role.id,
-      }));
-      inquirer
-        .prompt([
-          {
-            type: "list",
-            name: "employeeId",
-            message: "Choose an employee to update.",
-            choices: employeeChoices,
-          },
-          {
-            type: "list",
-            name: "roleId",
-            message: "What is the role ID of the employee?",
-            choices: roleChoices,
-          },
-        ])
-        .then((answers) => {
-          const updateQuery = "UPDATE employee SET role_id = ? WHERE id = ?";
-          db.query(updateQuery, [answers.roleId, answers.employeeId], (err) => {
-            if (err) {
-              console.error("Error updating employee role: " + err);
-            } else {
-              console.log("Employee role updated successfully.");
-            }
-            startPrompts();
-          });
-        });
-    });
-  });
-}
 
 function updateEmployeeManager() {
   const employeeQuery = "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name FROM employee";
